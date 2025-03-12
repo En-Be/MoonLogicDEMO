@@ -28,6 +28,13 @@ public class ButtonBehaviour : MonoBehaviour
         playedFrames++;
     }
 
+    public void RemoveFrame()
+    {
+        rend.sprite = null;
+        Debug.Log("rend.sprite = " + rend.sprite);
+        playedFrames++;
+    }
+
     public void UpdateCollider(Slice s)
     {
         Destroy(col);

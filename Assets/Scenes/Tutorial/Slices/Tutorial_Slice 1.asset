@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firstFrame: 14
   lastFrame: 25
-  buttonStart: 14
+  buttonStart: 15
   buttonFinish: 25
   passThreshold: 1
   nextSlice: 2

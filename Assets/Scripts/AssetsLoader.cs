@@ -115,8 +115,9 @@ public class AssetsLoader : MonoBehaviour
 
     public void LoadSlices()
     {
-        Slice[] slices = new Slice[sampler.sliceCount];
         int[] sliceStarts = SliceInfo();
+        int sliceCount = sliceStarts.Length;
+        Slice[] slices = new Slice[sliceCount];
 
         for(int i = 0; i < sampler.sliceCount; i++)
         {
@@ -130,14 +131,14 @@ public class AssetsLoader : MonoBehaviour
                 slices[i].lastFrame = sliceStarts[i + 1] - 1;
                 slices[i].buttonStart = sliceStarts[i];
                 slices[i].buttonFinish = sliceStarts[i + 1] - 1;
-                slices[i].passThreshold = 1;
+                slices[i].passThreshold = 0;
                 slices[i].nextSlice = i + 1;
                 slices[i].loopSlice = i;
                 AssetDatabase.CreateAsset(slices[i], "Assets/Scenes/" + sceneName + "/Slices/" + sceneName + "_Slice " + i + ".asset");
             }
         }
         sampler.slices = slices;
-        Debug.Log("Loaded " + sampler.sliceCount + " slices.");
+        Debug.Log("Loaded " + sliceCount + " slices.");
     }
 
     public int[] SliceInfo()

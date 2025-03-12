@@ -5,16 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/Chances/Beat.unity
-    guid: 069c600d0d767f242adebbdb4fa6a157
   - enabled: 1
     path: Assets/Scenes/Menu/Menu.unity
-    guid: 5ced7ed3981d7d740a2863d0501d968d
-  - enabled: 0
-    path: Assets/Scenes/Template/Template.unity
-    guid: 442debc942245c843976d6cf6bbbd4f2
+    guid: d769645dffa3ea748b48721d70290c90
   - enabled: 1
     path: Assets/Scenes/Tutorial/Tutorial.unity
-    guid: 5f24f053157687d41bd6860ac1e95a0b
+    guid: 15be951030b702043ab76498b805a4e2
   m_configObjects: {}

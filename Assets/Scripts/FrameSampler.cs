@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEditor;
@@ -20,6 +21,7 @@ public class FrameSampler : MonoBehaviour
     public AudioClip clip;
     public Object[] slices;
 
+    public string loadsTo;
 
     void Start()
     {
@@ -72,10 +74,10 @@ public class FrameSampler : MonoBehaviour
     
                  
     }
-
+/*
     void UpdateButton(Slice s)
     {
-        button.UpdateFrame(buttonFrames[currentFrame]);
+        button.UpdateFrame(buttonFrames[currentFrame]); // change this to check if there is a button frame whose name matches the current frame
 
         if(currentFrame >= s.buttonStart && currentFrame <= s.buttonFinish)
         {
@@ -85,6 +87,30 @@ public class FrameSampler : MonoBehaviour
         {
             button.RemoveCollider();
         }
+    }
+*/
+    void UpdateButton(Slice s)
+    {
+        Sprite foundSprite = FindSpriteWithNumber(buttonFrames, currentFrame);
+        if(foundSprite == null)
+        {
+            Debug.Log("No sprite found");
+            button.RemoveFrame();
+            button.RemoveCollider();
+        }
+        else
+        {
+            Debug.Log("found sprite " + foundSprite);
+            button.UpdateFrame(foundSprite);
+            button.UpdateCollider(s);
+        }
+    }
+
+    Sprite FindSpriteWithNumber(Sprite[] sprites, int number)
+    {
+        string sceneName = SceneManager.GetActiveScene().name.ToLower(); // Get scene name in lowercase
+        string expectedName = $"{sceneName}_buttonFrames_{number:D4}"; // Format number as 4-digit (e.g., 0001)
+        return sprites.FirstOrDefault(sprite => sprite.name == expectedName);
     }
 
     void EndChecks(Slice s)
@@ -122,6 +148,6 @@ public class FrameSampler : MonoBehaviour
     void Finish()
     {
         Debug.Log("Exiting scene");
-        SceneManager.LoadScene("Menu");
+        SceneManager.LoadScene(loadsTo);
     }
 }
