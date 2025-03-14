@@ -68,27 +68,10 @@ public class FrameSampler : MonoBehaviour
             Debug.Log(s);
             Debug.Log("what");
             EndChecks(s);
-        }  
-
-
-    
+        }     
                  
     }
-/*
-    void UpdateButton(Slice s)
-    {
-        button.UpdateFrame(buttonFrames[currentFrame]); // change this to check if there is a button frame whose name matches the current frame
 
-        if(currentFrame >= s.buttonStart && currentFrame <= s.buttonFinish)
-        {
-            button.UpdateCollider(s);
-        }
-        else
-        {
-            button.RemoveCollider();
-        }
-    }
-*/
     void UpdateButton(Slice s)
     {
         Sprite foundSprite = FindSpriteWithNumber(buttonFrames, currentFrame);
@@ -108,7 +91,7 @@ public class FrameSampler : MonoBehaviour
 
     Sprite FindSpriteWithNumber(Sprite[] sprites, int number)
     {
-        string sceneName = SceneManager.GetActiveScene().name.ToLower(); // Get scene name in lowercase
+        string sceneName = SceneManager.GetActiveScene().name; // Get scene name in lowercase
         string expectedName = $"{sceneName}_buttonFrames_{number:D4}"; // Format number as 4-digit (e.g., 0001)
         return sprites.FirstOrDefault(sprite => sprite.name == expectedName);
     }

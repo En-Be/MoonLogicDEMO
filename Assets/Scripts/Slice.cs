@@ -7,8 +7,6 @@ public class Slice : ScriptableObject
 {
     public int firstFrame;
     public int lastFrame;
-    public int buttonStart;
-    public int buttonFinish;
     public int passThreshold;
     public int nextSlice;
     public int loopSlice;

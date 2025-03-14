@@ -12,11 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dbb05fcbc6d9d04d97d45ff4f7774fc, type: 3}
   m_Name: Tutorial_Slice 8
   m_EditorClassIdentifier: 
-  firstFrame: 79
-  lastFrame: 88
-  buttonStart: 79
-  buttonFinish: 88
-  passThreshold: 1
+  firstFrame: 78
+  lastFrame: 87
+  passThreshold: 8
   nextSlice: 9
   loopSlice: 7
   isLastSlice: 0

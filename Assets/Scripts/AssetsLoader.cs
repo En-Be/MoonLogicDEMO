@@ -62,7 +62,7 @@ public class AssetsLoader : MonoBehaviour
         List<Sprite> loadedImages = new List<Sprite>();
 
         // Get all image files in the specified folder
-        string[] imagePaths = Directory.GetFiles("Assets/Scenes/" + sceneName + "/Frames/", "*.png"); // Adjust file extension as needed
+        string[] imagePaths = Directory.GetFiles("Assets/Scenes/" + sceneName + "/Frames/", "*.jpg"); // Adjust file extension as needed
         foreach (string imagePath in imagePaths)
         {
             // Load the image
@@ -83,7 +83,7 @@ public class AssetsLoader : MonoBehaviour
         List<Sprite> loadedImages = new List<Sprite>();
 
         // Get all image files in the specified folder
-        string[] imagePaths = Directory.GetFiles("Assets/Scenes/" + sceneName + "/ButtonFrames/", "*.png"); // Adjust file extension as needed
+        string[] imagePaths = Directory.GetFiles("Assets/Scenes/" + sceneName + "/ButtonFrames/", "*.jpg"); // Adjust file extension as needed
         foreach (string imagePath in imagePaths)
         {
             // Load the image
@@ -119,24 +119,23 @@ public class AssetsLoader : MonoBehaviour
         int sliceCount = sliceStarts.Length;
         Slice[] slices = new Slice[sliceCount];
 
-        for(int i = 0; i < sampler.sliceCount; i++)
+        for(int i = 0; i < sliceCount - 1; i++)
         {
             slices[i] = (Slice)AssetDatabase.LoadAssetAtPath("Assets/Scenes/" + sceneName + "/Slices/" + sceneName + "_Slice " + i + ".asset", typeof(Slice));
             if(slices[i] == null)
             {
                 Debug.Log("slice " + i + " not found");
                 Debug.Log("creating slice " + i);
-                slices[i] = new Slice();
+                slices[i] = ScriptableObject.CreateInstance<Slice>();
                 slices[i].firstFrame = sliceStarts[i];
                 slices[i].lastFrame = sliceStarts[i + 1] - 1;
-                slices[i].buttonStart = sliceStarts[i];
-                slices[i].buttonFinish = sliceStarts[i + 1] - 1;
                 slices[i].passThreshold = 0;
                 slices[i].nextSlice = i + 1;
                 slices[i].loopSlice = i;
                 AssetDatabase.CreateAsset(slices[i], "Assets/Scenes/" + sceneName + "/Slices/" + sceneName + "_Slice " + i + ".asset");
             }
         }
+        AssetDatabase.SaveAssets();
         sampler.slices = slices;
         Debug.Log("Loaded " + sliceCount + " slices.");
     }
@@ -161,8 +160,6 @@ public class AssetsLoader : MonoBehaviour
                     Debug.LogError("Invalid frame number format: " + line);
                 }
             }
-
-            //Debug.Log("Read " + frameNumbers.Count + " frame numbers.");
         }
         else
         {

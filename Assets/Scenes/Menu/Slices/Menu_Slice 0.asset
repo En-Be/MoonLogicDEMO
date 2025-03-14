@@ -13,12 +13,10 @@ MonoBehaviour:
   m_Name: Menu_Slice 0
   m_EditorClassIdentifier: 
   firstFrame: 0
-  lastFrame: 63
-  buttonStart: 0
-  buttonFinish: 63
+  lastFrame: 47
   passThreshold: 0
   nextSlice: 1
   loopSlice: 0
-  isLastSlice: 0
+  isLastSlice: 1
   loopOnRelease: 0
   passOnRelease: 0

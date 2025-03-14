@@ -13,9 +13,7 @@ MonoBehaviour:
   m_Name: Tutorial_Slice 0
   m_EditorClassIdentifier: 
   firstFrame: 0
-  lastFrame: 13
-  buttonStart: 0
-  buttonFinish: 13
+  lastFrame: 12
   passThreshold: 1
   nextSlice: 1
   loopSlice: 0
