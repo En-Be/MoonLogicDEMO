@@ -131,7 +131,7 @@ public class AssetsLoader : MonoBehaviour
                 slices[i].lastFrame = sliceStarts[i + 1] - 1;
                 slices[i].passThreshold = 0;
                 slices[i].nextSlice = i + 1;
-                slices[i].loopSlice = i;
+                slices[i].failSlice = i;
                 AssetDatabase.CreateAsset(slices[i], "Assets/Scenes/" + sceneName + "/Slices/" + sceneName + "_Slice " + i + ".asset");
             }
         }

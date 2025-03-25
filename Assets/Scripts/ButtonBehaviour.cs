@@ -31,11 +31,10 @@ public class ButtonBehaviour : MonoBehaviour
     public void RemoveFrame()
     {
         rend.sprite = null;
-        Debug.Log("rend.sprite = " + rend.sprite);
         playedFrames++;
     }
 
-    public void UpdateCollider(Slice s)
+    public bool UpdateCollider(Slice s)
     {
         Destroy(col);
         col = gameObject.AddComponent<PolygonCollider2D>();
@@ -47,12 +46,17 @@ public class ButtonBehaviour : MonoBehaviour
             {
                 touchedFrames++;
                 float score = (float)touchedFrames/s.passThreshold;
-                foreach(Image i in touchScoreIndicators)
+                if(s.lastFrame - s.firstFrame > 11)
                 {
-                    i.fillAmount = score;
+                    foreach(Image i in touchScoreIndicators)
+                    {
+                        i.fillAmount = score;
+                    }
                 }
+                return true;
             }
         }
+        return false;
         //Debug.Log("Button collider updated");
     }
 

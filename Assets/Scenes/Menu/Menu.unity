@@ -857,6 +857,8 @@ MonoBehaviour:
   currentFrame: 0
   sliceCount: 2
   currentSlice: 0
+  loopChancesToUse: 0
+  releaseChancesToUse: 0
   rend: {fileID: 0}
   button: {fileID: 0}
   aud: {fileID: 0}
@@ -913,7 +915,7 @@ MonoBehaviour:
   clip: {fileID: 8300000, guid: 0e0f67ba8277ebe469565299a3b1120b, type: 3}
   slices:
   - {fileID: 11400000, guid: 6b047bd9f2a842d41a9cd5f4d52554df, type: 2}
-  loadsTo: Tutorial
+  loadsTo: Chances
 --- !u!82 &1361967930
 AudioSource:
   m_ObjectHideFlags: 0

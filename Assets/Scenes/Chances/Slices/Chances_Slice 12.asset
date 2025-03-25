@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dbb05fcbc6d9d04d97d45ff4f7774fc, type: 3}
   m_Name: Chances_Slice 12
   m_EditorClassIdentifier: 
-  firstFrame: 1113
-  lastFrame: 1155
-  buttonStart: 1113
-  buttonFinish: 1155
-  passThreshold: 0
+  firstFrame: 1155
+  lastFrame: 1201
+  passThreshold: 15
+  loopChances: 0
+  releaseChances: 0
   nextSlice: 13
-  loopSlice: 12
+  failSlice: 0
   isLastSlice: 0
   loopOnRelease: 0
   passOnRelease: 0

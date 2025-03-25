@@ -11,6 +11,8 @@ public class FrameSampler : MonoBehaviour
     public int currentFrame;
     public int sliceCount;
     public int currentSlice;
+    public int loopChancesToUse;
+    public int releaseChancesToUse;
 
     public SpriteRenderer rend;
     public ButtonBehaviour button;
@@ -33,40 +35,50 @@ public class FrameSampler : MonoBehaviour
         aud.clip = clip;
 
         aud.Play();
+
+        Slice s = (Slice)slices[currentSlice];
+        currentFrame = s.firstFrame;
+        loopChancesToUse = s.loopChances;
+        releaseChancesToUse = s.releaseChances;
+        float targetTime = (float)currentFrame/frameRate;
+        aud.time = targetTime;
     }
 
     void FixedUpdate()
     {   
         Slice s = (Slice)slices[currentSlice];
 
-        Debug.Log("current frame = " + currentFrame);
+        //Debug.Log("current frame = " + currentFrame);
         rend.sprite = frames[currentFrame];
+
+        if(s.loopChances == 0 || s.loopChances == loopChancesToUse)
+        {
+            rend.color = Color.white;           
+        }
+
         UpdateButton(s);
 
         if(button.touchedFrames < button.playedFrames) 
         {
-            Debug.Log("played frames: " + button.playedFrames);
-            Debug.Log("touched frames: " + button.touchedFrames);
+            //Debug.Log("played frames: " + button.playedFrames);
+            //Debug.Log("touched frames: " + button.touchedFrames);
             if(s.loopOnRelease)
             {
-                currentSlice = s.loopSlice;
-                SliceEnd();
+                CheckReleaseChances(s);
             }
             else if(s.passOnRelease)
             {
                 currentSlice = s.nextSlice;
-                //s = (Slice)slices[currentSlice];
-                SliceEnd();
+                //Debug.Log("current slice updated to next slice ");
+                SliceEnd(s);
             }
         }
         
-        s = (Slice)slices[currentSlice];
         currentFrame++;
 
-        if(currentFrame > s.lastFrame) // if last slice of frame has been played
+        if(currentFrame > s.lastFrame)
         {   
-            Debug.Log(s);
-            Debug.Log("what");
+            //Debug.Log(s);
             EndChecks(s);
         }     
                  
@@ -77,49 +89,105 @@ public class FrameSampler : MonoBehaviour
         Sprite foundSprite = FindSpriteWithNumber(buttonFrames, currentFrame);
         if(foundSprite == null)
         {
-            Debug.Log("No sprite found");
+            //Debug.Log("No sprite found");
             button.RemoveFrame();
             button.RemoveCollider();
         }
         else
         {
-            Debug.Log("found sprite " + foundSprite);
+            //Debug.Log("found sprite " + foundSprite);
             button.UpdateFrame(foundSprite);
-            button.UpdateCollider(s);
+            bool touching = button.UpdateCollider(s);
+            Debug.Log("touching = " + touching);
+            if(touching && s.loopOnRelease)
+            {
+                releaseChancesToUse = s.releaseChances;
+                button.touchedFrames = button.playedFrames;
+            }
+            if(touching && !s.loopOnRelease && !s.passOnRelease)
+            {
+                rend.color = Color.white;
+            }
         }
     }
 
     Sprite FindSpriteWithNumber(Sprite[] sprites, int number)
     {
-        string sceneName = SceneManager.GetActiveScene().name; // Get scene name in lowercase
-        string expectedName = $"{sceneName}_buttonFrames_{number:D4}"; // Format number as 4-digit (e.g., 0001)
+        string sceneName = SceneManager.GetActiveScene().name; 
+        string expectedName = $"{sceneName}_buttonFrames_{number:D4}"; 
         return sprites.FirstOrDefault(sprite => sprite.name == expectedName);
+    }
+
+    void CheckReleaseChances(Slice s)
+    {
+        if(releaseChancesToUse == 0)
+        {
+            currentSlice = s.failSlice;
+            Slice ns = (Slice)slices[currentSlice];
+            loopChancesToUse = ns.loopChances;
+            releaseChancesToUse = ns.releaseChances;
+            
+            SliceEnd(s);
+        }
+        else
+        {
+            releaseChancesToUse--;
+            float f = (float)1/s.releaseChances;
+            f = (float)f*releaseChancesToUse;
+            //Debug.Log("release chances to use = " + releaseChancesToUse);
+            //Debug.Log("colour value = " + f);
+            Color c = new Color(f, f, f, 1);
+            rend.color = c;
+        }
     }
 
     void EndChecks(Slice s)
     {
-        //Debug.Log("end checks");
         if(s.isLastSlice)
         {
             Finish();
         }
-        else if(s.passThreshold == 0 || button.touchedFrames >= s.passThreshold && s.passOnRelease == false) // swap this conditional for actual threshold checks
+        else if(s.passThreshold == 0 || button.touchedFrames >= s.passThreshold && s.passOnRelease == false)
         {
             currentSlice = s.nextSlice;
+            //Debug.Log("current slice updated to next slice");
+            Slice ns = (Slice)slices[currentSlice];
+            loopChancesToUse = ns.loopChances;
+            releaseChancesToUse = ns.releaseChances;
         }
-        else
+        else if (s.loopChances > 0)
         {
-            currentSlice = s.loopSlice;
+            CheckLoopChances(s);
         }
 
-        SliceEnd();
+        SliceEnd(s);
     }
 
-    void SliceEnd()
+    void CheckLoopChances(Slice s)
     {
-        Debug.Log("slice end");
+        loopChancesToUse--;
+        float f = (float)1/s.loopChances;
+        f = (float)f*loopChancesToUse;
+        //Debug.Log("loop chances to use = " + loopChancesToUse);
+        //Debug.Log("colour value = " + f);
+        Color c = new Color(f, f, f, 1);
+        rend.color = c;
+        
+        if(loopChancesToUse == 0)
+        {
+            currentSlice = s.failSlice;
+            Slice ns = (Slice)slices[currentSlice];
+            loopChancesToUse = ns.loopChances;
+            releaseChancesToUse = ns.releaseChances;
+        }
+        
+    }
+
+    void SliceEnd(Slice s)
+    {
         Slice ns = (Slice)slices[currentSlice];
         currentFrame = ns.firstFrame;
+
         float targetTime = (float)currentFrame/frameRate;
         aud.time = targetTime;
 
