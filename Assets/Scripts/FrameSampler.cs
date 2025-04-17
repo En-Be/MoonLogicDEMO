@@ -15,7 +15,7 @@ public class FrameSampler : MonoBehaviour
     public int releaseChancesToUse;
 
     public SpriteRenderer rend;
-    public ButtonBehaviour button;
+    public ButtonBehaviour[] buttons;
     public AudioSource aud;
 
     public Sprite[] frames;
@@ -30,7 +30,7 @@ public class FrameSampler : MonoBehaviour
         Time.fixedDeltaTime = 1f/frameRate;
 
         rend = GetComponent<SpriteRenderer>();
-        button = transform.parent.GetComponentInChildren<ButtonBehaviour>();
+        buttons = transform.parent.GetComponentsInChildren<ButtonBehaviour>();
         aud = GetComponent<AudioSource>();
         aud.clip = clip;
 
@@ -58,19 +58,22 @@ public class FrameSampler : MonoBehaviour
 
         UpdateButton(s);
 
-        if(button.touchedFrames < button.playedFrames) 
+        foreach(ButtonBehaviour button in buttons)
         {
-            //Debug.Log("played frames: " + button.playedFrames);
-            //Debug.Log("touched frames: " + button.touchedFrames);
-            if(s.loopOnRelease)
+            if(button.touchedFrames < button.playedFrames) 
             {
-                CheckReleaseChances(s);
-            }
-            else if(s.passOnRelease)
-            {
-                currentSlice = s.nextSlice;
-                //Debug.Log("current slice updated to next slice ");
-                SliceEnd(s);
+                //Debug.Log("played frames: " + button.playedFrames);
+                //Debug.Log("touched frames: " + button.touchedFrames);
+                if(s.loopOnRelease)
+                {
+                    CheckReleaseChances(s);
+                }
+                else if(s.passOnRelease)
+                {
+                    currentSlice = s.nextSlice;
+                    //Debug.Log("current slice updated to next slice ");
+                    SliceEnd(s);
+                }
             }
         }
         
@@ -86,27 +89,30 @@ public class FrameSampler : MonoBehaviour
 
     void UpdateButton(Slice s)
     {
-        Sprite foundSprite = FindSpriteWithNumber(buttonFrames, currentFrame);
-        if(foundSprite == null)
+        foreach(ButtonBehaviour button in buttons)
         {
-            //Debug.Log("No sprite found");
-            button.RemoveFrame();
-            button.RemoveCollider();
-        }
-        else
-        {
-            //Debug.Log("found sprite " + foundSprite);
-            button.UpdateFrame(foundSprite);
-            bool touching = button.UpdateCollider(s);
-            Debug.Log("touching = " + touching);
-            if(touching && s.loopOnRelease)
+            Sprite foundSprite = FindSpriteWithNumber(buttonFrames, currentFrame);
+            if(foundSprite == null)
             {
-                releaseChancesToUse = s.releaseChances;
-                button.touchedFrames = button.playedFrames;
+                //Debug.Log("No sprite found");
+                button.RemoveFrame();
+                button.RemoveCollider();
             }
-            if(touching && !s.loopOnRelease && !s.passOnRelease)
+            else
             {
-                rend.color = Color.white;
+                //Debug.Log("found sprite " + foundSprite);
+                button.UpdateFrame(foundSprite);
+                bool touching = button.UpdateCollider(s);
+                Debug.Log("touching = " + touching);
+                if(touching && s.loopOnRelease)
+                {
+                    releaseChancesToUse = s.releaseChances;
+                    button.touchedFrames = button.playedFrames;
+                }
+                if(touching && !s.loopOnRelease && !s.passOnRelease)
+                {
+                    rend.color = Color.white;
+                }
             }
         }
     }
@@ -134,8 +140,6 @@ public class FrameSampler : MonoBehaviour
             releaseChancesToUse--;
             float f = (float)1/s.releaseChances;
             f = (float)f*releaseChancesToUse;
-            //Debug.Log("release chances to use = " + releaseChancesToUse);
-            //Debug.Log("colour value = " + f);
             Color c = new Color(f, f, f, 1);
             rend.color = c;
         }
@@ -143,21 +147,24 @@ public class FrameSampler : MonoBehaviour
 
     void EndChecks(Slice s)
     {
-        if(s.isLastSlice)
+        foreach(ButtonBehaviour button in buttons)
         {
-            Finish();
-        }
-        else if(s.passThreshold == 0 || button.touchedFrames >= s.passThreshold && s.passOnRelease == false)
-        {
-            currentSlice = s.nextSlice;
-            //Debug.Log("current slice updated to next slice");
-            Slice ns = (Slice)slices[currentSlice];
-            loopChancesToUse = ns.loopChances;
-            releaseChancesToUse = ns.releaseChances;
-        }
-        else if (s.loopChances > 0)
-        {
-            CheckLoopChances(s);
+            if(s.isLastSlice)
+            {
+                Finish();
+            }
+            else if(s.passThreshold == 0 || button.touchedFrames >= s.passThreshold && s.passOnRelease == false)
+            {
+                currentSlice = s.nextSlice;
+                //Debug.Log("current slice updated to next slice");
+                Slice ns = (Slice)slices[currentSlice];
+                loopChancesToUse = ns.loopChances;
+                releaseChancesToUse = ns.releaseChances;
+            }
+            else if (s.loopChances > 0)
+            {
+                CheckLoopChances(s);
+            }
         }
 
         SliceEnd(s);
@@ -190,9 +197,10 @@ public class FrameSampler : MonoBehaviour
 
         float targetTime = (float)currentFrame/frameRate;
         aud.time = targetTime;
-
-        button.Reset();
-
+        foreach(ButtonBehaviour button in buttons)
+        {
+            button.Reset();
+        }
         Debug.Log("Starting slice " + currentSlice);
     }
 

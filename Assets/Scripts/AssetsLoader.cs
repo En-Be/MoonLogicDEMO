@@ -134,6 +134,11 @@ public class AssetsLoader : MonoBehaviour
                 slices[i].failSlice = i;
                 AssetDatabase.CreateAsset(slices[i], "Assets/Scenes/" + sceneName + "/Slices/" + sceneName + "_Slice " + i + ".asset");
             }
+            else if (slices[i] != null)
+            {
+                slices[i].firstFrame = sliceStarts[i];
+                slices[i].lastFrame = sliceStarts[i + 1] - 1;
+            }
         }
         AssetDatabase.SaveAssets();
         sampler.slices = slices;
