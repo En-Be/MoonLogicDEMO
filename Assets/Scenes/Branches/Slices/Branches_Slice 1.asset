@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dbb05fcbc6d9d04d97d45ff4f7774fc, type: 3}
   m_Name: Branches_Slice 1
   m_EditorClassIdentifier: 
-  firstFrame: 61
+  firstFrame: 69
   lastFrame: 71
   passThreshold: 1
   loopChances: 0
   releaseChances: 0
-  nextSlice: 2
+  nextSlice: 02000000
   failSlice: 1
+  showScore: 1
   isLastSlice: 0
   loopOnRelease: 0
   passOnRelease: 0

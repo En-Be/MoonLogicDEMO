@@ -59,8 +59,10 @@ public class FrameSampler : MonoBehaviour
 
         UpdateButton(s);
 
-        foreach(ButtonBehaviour button in buttons)
+        for(int i = 0; i < buttons.Length; i++)
         {
+            ButtonBehaviour button = buttons[i];
+
             if(button.touchedFrames < button.playedFrames) 
             {
                 //Debug.Log("played frames: " + button.playedFrames);
@@ -71,7 +73,7 @@ public class FrameSampler : MonoBehaviour
                 }
                 else if(s.passOnRelease)
                 {
-                    currentSlice = s.nextSlice;
+                    currentSlice = s.nextSlice[i];
                     //Debug.Log("current slice updated to next slice ");
                     SliceEnd(s);
                 }
@@ -90,9 +92,11 @@ public class FrameSampler : MonoBehaviour
 
     void UpdateButton(Slice s)
     {
-        foreach(ButtonBehaviour button in buttons)
+        for(int i = 0; i < buttons.Length; i++)
         {
-            Sprite foundSprite = FindSpriteWithNumber(buttonFrames[0].sprites, currentFrame);
+            ButtonBehaviour button = buttons[i];
+
+            Sprite foundSprite = FindSpriteWithNumber(i, currentFrame);
             if(foundSprite == null)
             {
                 //Debug.Log("No sprite found");
@@ -103,8 +107,8 @@ public class FrameSampler : MonoBehaviour
             {
                 //Debug.Log("found sprite " + foundSprite);
                 button.UpdateFrame(foundSprite);
-                bool touching = button.UpdateCollider(s);
-                Debug.Log("touching = " + touching);
+                bool touching = button.UpdateCollider(s,i);
+                //Debug.Log("touching = " + touching);
                 if(touching && s.loopOnRelease)
                 {
                     releaseChancesToUse = s.releaseChances;
@@ -118,11 +122,11 @@ public class FrameSampler : MonoBehaviour
         }
     }
 
-    Sprite FindSpriteWithNumber(List<Sprite> sprites, int number)
+    Sprite FindSpriteWithNumber(int button, int number)
     {
         string sceneName = SceneManager.GetActiveScene().name; 
-        string expectedName = $"{sceneName}_buttonFrames_{number:D4}"; 
-        return sprites.FirstOrDefault(sprite => sprite.name == expectedName);
+        string expectedName = $"{sceneName}_button{button}_{number:D4}"; 
+        return buttonFrames[button].sprites.FirstOrDefault(sprite => sprite.name == expectedName);
     }
 
     void CheckReleaseChances(Slice s)
@@ -145,19 +149,22 @@ public class FrameSampler : MonoBehaviour
             rend.color = c;
         }
     }
-
+/*
     void EndChecks(Slice s)
     {
-        foreach(ButtonBehaviour button in buttons)
+        for(int i = 0; i < buttons.Length; i++)
         {
+            ButtonBehaviour button = buttons[i];
+
             if(s.isLastSlice)
             {
                 Finish();
             }
             else if(s.passThreshold == 0 || button.touchedFrames >= s.passThreshold && s.passOnRelease == false)
             {
-                currentSlice = s.nextSlice;
-                //Debug.Log("current slice updated to next slice");
+                Debug.Log(i);
+                Debug.Log(s.nextSlice[i]);
+                currentSlice = s.nextSlice[i];
                 Slice ns = (Slice)slices[currentSlice];
                 loopChancesToUse = ns.loopChances;
                 releaseChancesToUse = ns.releaseChances;
@@ -170,16 +177,52 @@ public class FrameSampler : MonoBehaviour
 
         SliceEnd(s);
     }
+*/
+
+    void EndChecks(Slice s)
+    {
+        if(s.isLastSlice)
+        {
+            Finish();
+        }
+        else
+        {
+            for(int i = 0; i < buttons.Length; i++)
+            {
+                ButtonBehaviour button = buttons[i];
+                if(s.passThreshold == 0 || button.touchedFrames >= s.passThreshold && s.passOnRelease == false)
+                {
+                    Debug.Log("button = " + i);
+                    Debug.Log("next slice = " + s.nextSlice[i]);
+                    currentSlice = s.nextSlice[i];
+                    Slice ns = (Slice)slices[currentSlice];
+                    loopChancesToUse = ns.loopChances;
+                    releaseChancesToUse = ns.releaseChances;
+                    break;
+                }
+            }
+        }
+
+        if (s.loopChances > 0)
+        {
+            CheckLoopChances(s);
+        }
+        
+        SliceEnd(s);
+    }
 
     void CheckLoopChances(Slice s)
     {
         loopChancesToUse--;
-        float f = (float)1/s.loopChances;
-        f = (float)f*loopChancesToUse;
-        //Debug.Log("loop chances to use = " + loopChancesToUse);
-        //Debug.Log("colour value = " + f);
-        Color c = new Color(f, f, f, 1);
-        rend.color = c;
+        if(s.fadesWithChances)
+        {
+            float f = (float)1/s.loopChances;
+            f = (float)f*loopChancesToUse;
+            //Debug.Log("loop chances to use = " + loopChancesToUse);
+            //Debug.Log("colour value = " + f);
+            Color c = new Color(f, f, f, 1);
+            rend.color = c;
+        }
         
         if(loopChancesToUse == 0)
         {

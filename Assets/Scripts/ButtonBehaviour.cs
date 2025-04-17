@@ -34,7 +34,7 @@ public class ButtonBehaviour : MonoBehaviour
         playedFrames++;
     }
 
-    public bool UpdateCollider(Slice s)
+    public bool UpdateCollider(Slice s, int b)
     {
         Destroy(col);
         col = gameObject.AddComponent<PolygonCollider2D>();
@@ -42,8 +42,8 @@ public class ButtonBehaviour : MonoBehaviour
         if(Input.touchCount > 0 || (Input.GetMouseButton(0)))
         {   
             //Debug.Log("Frame is touched");
-            if(RayHasHit())
-            {
+            if(RayHasHit(b))
+            {              
                 touchedFrames++;
                 float score = (float)touchedFrames/s.passThreshold;
                 if(s.lastFrame - s.firstFrame > 11)
@@ -66,7 +66,7 @@ public class ButtonBehaviour : MonoBehaviour
         //Debug.Log("Button collider removed");
     }
 
-    bool RayHasHit()
+    bool RayHasHit(int b)
     {
         RaycastHit2D hit;
 
@@ -82,12 +82,23 @@ public class ButtonBehaviour : MonoBehaviour
 
         if(hit)
         {
-            return(true);
+            Debug.Log("Touched object: " + hit.collider.gameObject.name);
+
+            string objectName = hit.collider.gameObject.name;
+            if (objectName == "Button_" + b)
+            {
+                return(true);
+            }
+            else
+            {
+                return(false);
+            }
         }
         else
         {
             return(false);
         }
+
     }
 
     public void Reset()

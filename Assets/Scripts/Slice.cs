@@ -10,12 +10,12 @@ public class Slice : ScriptableObject
     public int passThreshold;
     public int loopChances;
     public int releaseChances;
-    public int nextSlice;
+    public int[] nextSlice;
     public int failSlice;
 
-    //public bool isHoldSlice;
+    public bool showScore;
+    public bool fadesWithChances;
     public bool isLastSlice;
-    //public bool startsTouching;
     public bool loopOnRelease;
     public bool passOnRelease;
 }
