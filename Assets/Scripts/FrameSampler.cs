@@ -19,7 +19,8 @@ public class FrameSampler : MonoBehaviour
     public AudioSource aud;
 
     public Sprite[] frames;
-    public Sprite[] buttonFrames;
+    public List<SpriteGroup> buttonFrames = new List<SpriteGroup>();
+
     public AudioClip clip;
     public Object[] slices;
 
@@ -91,7 +92,7 @@ public class FrameSampler : MonoBehaviour
     {
         foreach(ButtonBehaviour button in buttons)
         {
-            Sprite foundSprite = FindSpriteWithNumber(buttonFrames, currentFrame);
+            Sprite foundSprite = FindSpriteWithNumber(buttonFrames[0].sprites, currentFrame);
             if(foundSprite == null)
             {
                 //Debug.Log("No sprite found");
@@ -117,7 +118,7 @@ public class FrameSampler : MonoBehaviour
         }
     }
 
-    Sprite FindSpriteWithNumber(Sprite[] sprites, int number)
+    Sprite FindSpriteWithNumber(List<Sprite> sprites, int number)
     {
         string sceneName = SceneManager.GetActiveScene().name; 
         string expectedName = $"{sceneName}_buttonFrames_{number:D4}"; 

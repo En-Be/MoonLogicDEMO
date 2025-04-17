@@ -7,6 +7,12 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine.SceneManagement;
 
+[System.Serializable]
+public class SpriteGroup
+{
+    public List<Sprite> sprites = new List<Sprite>();
+}
+
 public class AssetsLoader : MonoBehaviour
 {
     public FrameSampler sampler; 
@@ -80,24 +86,50 @@ public class AssetsLoader : MonoBehaviour
 
     public void LoadButtonFrames()
     {
-        List<Sprite> loadedImages = new List<Sprite>();
+        // Clear the list first (optional but cleaner)
+        sampler.buttonFrames.Clear();
+        
+        int folderIndex = 0;
 
-        // Get all image files in the specified folder
-        string[] imagePaths = Directory.GetFiles("Assets/Scenes/" + sceneName + "/ButtonFrames/", "*.jpg"); // Adjust file extension as needed
-        foreach (string imagePath in imagePaths)
+        while (true)
         {
-            // Load the image
-            Sprite image = AssetDatabase.LoadAssetAtPath<Sprite>(imagePath);
-            if (image != null)
+            string folderPath = $"Assets/Scenes/{sceneName}/ButtonFrames_{folderIndex}/";
+            
+            if (!Directory.Exists(folderPath))
             {
-                loadedImages.Add(image);
+                // No more folders found, stop searching
+                break;
             }
+
+            // Create a new SpriteGroup
+            SpriteGroup newGroup = new SpriteGroup();
+
+            // Get all image files in the folder
+            string[] imagePaths = Directory.GetFiles(folderPath, "*.jpg"); // Change extension if needed
+
+            foreach (string imagePath in imagePaths)
+            {
+                // Unity expects forward slashes in paths
+                string assetPath = imagePath.Replace("\\", "/");
+
+                Sprite image = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+                if (image != null)
+                {
+                    newGroup.sprites.Add(image);
+                }
+            }
+
+            // Add this group to the sampler
+            sampler.buttonFrames.Add(newGroup);
+
+            Debug.Log($"Loaded {newGroup.sprites.Count} images from {folderPath}");
+
+            folderIndex++; // Move to next folder
         }
 
-        // Assign the loaded images to the array
-        sampler.buttonFrames = loadedImages.ToArray();
-        Debug.Log("Loaded " + loadedImages.Count + " images.");
+        Debug.Log($"Finished loading {sampler.buttonFrames.Count} button frame groups.");
     }
+
 
     public void LoadAudio()
     {
