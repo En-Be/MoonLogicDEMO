@@ -15,7 +15,7 @@ MonoBehaviour:
   firstFrame: 405
   lastFrame: 407
   passThreshold: 1
-  loopChances: 0
+  loopChances: 10
   releaseChances: 0
   nextSlice: 110000001200000014000000
   failSlice: 19

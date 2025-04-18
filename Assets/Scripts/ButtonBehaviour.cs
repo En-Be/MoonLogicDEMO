@@ -13,12 +13,10 @@ public class ButtonBehaviour : MonoBehaviour
     public Camera cam;
     public Image[] touchScoreIndicators;
 
-    // Start is called before the first frame update
     void Start()
     {
         col = GetComponent<PolygonCollider2D>();
         rend = GetComponent<SpriteRenderer>();
-        //Debug.Log(Application.platform);
         Reset();
     }
 
@@ -34,21 +32,39 @@ public class ButtonBehaviour : MonoBehaviour
         playedFrames++;
     }
 
-    public bool UpdateCollider(Slice s, int b)
+    public bool UpdateCollider(Slice s, int b, List<Vector2[]> colliderPaths)
     {
-        Destroy(col);
-        col = gameObject.AddComponent<PolygonCollider2D>();
+        if (colliderPaths == null || colliderPaths.Count == 0)
+        {
+            RemoveCollider();
+            return false;
+        }
 
-        if(Input.touchCount > 0 || (Input.GetMouseButton(0)))
-        {   
-            //Debug.Log("Frame is touched");
-            if(RayHasHit(b))
-            {              
+        if (col == null)
+        {
+            col = gameObject.AddComponent<PolygonCollider2D>();
+        }
+        else
+        {
+            (col as PolygonCollider2D).pathCount = colliderPaths.Count;
+        }
+
+        PolygonCollider2D polyCol = col as PolygonCollider2D;
+
+        for (int i = 0; i < colliderPaths.Count; i++)
+        {
+            polyCol.SetPath(i, colliderPaths[i]);
+        }
+
+        if (Input.touchCount > 0 || Input.GetMouseButton(0))
+        {
+            if (RayHasHit(b))
+            {
                 touchedFrames++;
-                float score = (float)touchedFrames/s.passThreshold;
-                if(s.lastFrame - s.firstFrame > 11)
+                float score = (float)touchedFrames / s.passThreshold;
+                if (s.lastFrame - s.firstFrame > 11)
                 {
-                    foreach(Image i in touchScoreIndicators)
+                    foreach (Image i in touchScoreIndicators)
                     {
                         i.fillAmount = score;
                     }
@@ -57,13 +73,12 @@ public class ButtonBehaviour : MonoBehaviour
             }
         }
         return false;
-        //Debug.Log("Button collider updated");
     }
+
 
     public void RemoveCollider()
     {
         Destroy(col);
-        //Debug.Log("Button collider removed");
     }
 
     bool RayHasHit(int b)
@@ -103,7 +118,6 @@ public class ButtonBehaviour : MonoBehaviour
 
     public void Reset()
     {
-        //Debug.Log("touched frames = " + touchedFrames);
         playedFrames = 0;
         touchedFrames = 0;
         foreach(Image i in touchScoreIndicators)

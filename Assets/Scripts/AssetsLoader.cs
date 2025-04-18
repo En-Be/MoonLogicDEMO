@@ -7,11 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine.SceneManagement;
 
-[System.Serializable]
-public class SpriteGroup
-{
-    public List<Sprite> sprites = new List<Sprite>();
-}
 
 public class AssetsLoader : MonoBehaviour
 {
@@ -88,7 +83,8 @@ public class AssetsLoader : MonoBehaviour
     {
         // Clear the list first (optional but cleaner)
         sampler.buttonFrames.Clear();
-        
+        sampler.buttonColliderDatas.Clear();
+
         int folderIndex = 0;
 
         while (true)
@@ -104,31 +100,102 @@ public class AssetsLoader : MonoBehaviour
             // Create a new SpriteGroup
             SpriteGroup newGroup = new SpriteGroup();
 
+            List<ColliderFrame> colliderFrames = new List<ColliderFrame>();
+
             // Get all image files in the folder
             string[] imagePaths = Directory.GetFiles(folderPath, "*.jpg"); // Change extension if needed
 
             foreach (string imagePath in imagePaths)
             {
-                // Unity expects forward slashes in paths
                 string assetPath = imagePath.Replace("\\", "/");
 
                 Sprite image = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
                 if (image != null)
                 {
                     newGroup.sprites.Add(image);
+
+                    // ---- Collider baking here ----
+                    PolygonCollider2D tempCollider = new GameObject().AddComponent<PolygonCollider2D>();
+                    tempCollider.pathCount = 1;
+                    
+                    List<Vector2> path = new List<Vector2>();
+                    image.GetPhysicsShape(0, path);
+
+                    if (path.Count == 0)
+                    {
+                        Debug.LogWarning($"No collider shape found for sprite: {image.name}");
+                    }
+                    else
+                    {
+                        Debug.Log($"Collider path count for {image.name}: {path.Count}");
+                    }
+                    
+                    int frameNumber = ParseFrameNumberFromImageName(image.name); // <- You need to extract the number from the sprite's name
+                    ColliderFrame frame = new ColliderFrame
+                    {
+                        frameNumber = frameNumber,
+                        points = path.ToArray()
+                    };
+
+                    // Check if ColliderFrame is populated before adding it
+                    if (frame.points.Length > 0)
+                    {
+                        colliderFrames.Add(frame);
+                        Debug.Log($"Added collider frame for {image.name} with {frame.points.Length} points.");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"No points for collider frame of {image.name}. Frame was not added.");
+                    }
+
+
+
+                    GameObject.DestroyImmediate(tempCollider.gameObject);
                 }
             }
 
             // Add this group to the sampler
             sampler.buttonFrames.Add(newGroup);
 
-            Debug.Log($"Loaded {newGroup.sprites.Count} images from {folderPath}");
+            // Save ColliderFrameData ScriptableObject
+            string colliderDataPath = $"{folderPath}/ButtonFrameColliders_{folderIndex}.asset";
+            ColliderFrameData colliderData = AssetDatabase.LoadAssetAtPath<ColliderFrameData>(colliderDataPath);
+            if (colliderData == null)
+            {
+                colliderData = ScriptableObject.CreateInstance<ColliderFrameData>();
+                AssetDatabase.CreateAsset(colliderData, colliderDataPath);
+            }
+            sampler.buttonColliderDatas.Add(colliderData);
 
-            folderIndex++; // Move to next folder
+            colliderData.frames = colliderFrames.ToArray();
+            EditorUtility.SetDirty(colliderData);
+
+            Debug.Log($"Loaded {newGroup.sprites.Count} images and baked {colliderFrames.Count} colliders from {folderPath}");
+
+            folderIndex++;
         }
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
 
         Debug.Log($"Finished loading {sampler.buttonFrames.Count} button frame groups.");
     }
+
+
+    int ParseFrameNumberFromImageName(string imageName)
+    {
+        // Split by underscores
+        string[] parts = imageName.Split('_');
+        if (parts.Length >= 3)
+        {
+            if (int.TryParse(parts[2], out int number))
+                return number;
+        }
+        Debug.LogWarning($"Failed to parse frame number from {imageName}");
+        return -1;
+    }
+
+
 
 
     public void LoadAudio()

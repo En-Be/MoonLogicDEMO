@@ -5,6 +5,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEditor;
 
+[System.Serializable]
+public class SpriteGroup
+{
+    public List<Sprite> sprites = new List<Sprite>();
+}
+
 public class FrameSampler : MonoBehaviour
 {
     public int frameRate = 24;
@@ -20,6 +26,7 @@ public class FrameSampler : MonoBehaviour
 
     public Sprite[] frames;
     public List<SpriteGroup> buttonFrames = new List<SpriteGroup>();
+    public List<ColliderFrameData> buttonColliderDatas;
 
     public AudioClip clip;
     public Object[] slices;
@@ -65,8 +72,7 @@ public class FrameSampler : MonoBehaviour
 
             if(button.touchedFrames < button.playedFrames) 
             {
-                //Debug.Log("played frames: " + button.playedFrames);
-                //Debug.Log("touched frames: " + button.touchedFrames);
+
                 if(s.loopOnRelease)
                 {
                     CheckReleaseChances(s);
@@ -74,7 +80,6 @@ public class FrameSampler : MonoBehaviour
                 else if(s.passOnRelease)
                 {
                     currentSlice = s.nextSlice[i];
-                    //Debug.Log("current slice updated to next slice ");
                     SliceEnd(s);
                 }
             }
@@ -84,7 +89,6 @@ public class FrameSampler : MonoBehaviour
 
         if(currentFrame > s.lastFrame)
         {   
-            //Debug.Log(s);
             EndChecks(s);
         }     
                  
@@ -92,29 +96,30 @@ public class FrameSampler : MonoBehaviour
 
     void UpdateButton(Slice s)
     {
-        for(int i = 0; i < buttons.Length; i++)
+        for (int i = 0; i < buttons.Length; i++)
         {
             ButtonBehaviour button = buttons[i];
 
             Sprite foundSprite = FindSpriteWithNumber(i, currentFrame);
-            if(foundSprite == null)
+            List<Vector2[]> colliderPaths = FindColliderWithNumber(i, currentFrame);
+
+            if (foundSprite == null || colliderPaths == null)
             {
-                //Debug.Log("No sprite found");
                 button.RemoveFrame();
                 button.RemoveCollider();
+                Debug.Log("sprite or paths is null");
             }
             else
             {
-                //Debug.Log("found sprite " + foundSprite);
                 button.UpdateFrame(foundSprite);
-                bool touching = button.UpdateCollider(s,i);
-                //Debug.Log("touching = " + touching);
-                if(touching && s.loopOnRelease)
+                bool touching = button.UpdateCollider(s, i, colliderPaths);
+
+                if (touching && s.loopOnRelease)
                 {
                     releaseChancesToUse = s.releaseChances;
                     button.touchedFrames = button.playedFrames;
                 }
-                if(touching && !s.loopOnRelease && !s.passOnRelease)
+                if (touching && !s.loopOnRelease && !s.passOnRelease)
                 {
                     rend.color = Color.white;
                 }
@@ -124,10 +129,26 @@ public class FrameSampler : MonoBehaviour
 
     Sprite FindSpriteWithNumber(int button, int number)
     {
-        string sceneName = SceneManager.GetActiveScene().name; 
-        string expectedName = $"{sceneName}_button{button}_{number:D4}"; 
+        string sceneName = SceneManager.GetActiveScene().name;
+        string expectedName = $"{sceneName}_button{button}_{number:D4}";
         return buttonFrames[button].sprites.FirstOrDefault(sprite => sprite.name == expectedName);
     }
+
+    List<Vector2[]> FindColliderWithNumber(int button, int number)
+    {
+
+        var dataGroup = buttonColliderDatas[button];
+
+        var frameData = dataGroup.frames.FirstOrDefault(frame => frame.frameNumber == number);
+
+        if (frameData == null)
+            return null;
+
+        return new List<Vector2[]> { frameData.points };
+    }
+
+
+
 
     void CheckReleaseChances(Slice s)
     {
@@ -149,35 +170,6 @@ public class FrameSampler : MonoBehaviour
             rend.color = c;
         }
     }
-/*
-    void EndChecks(Slice s)
-    {
-        for(int i = 0; i < buttons.Length; i++)
-        {
-            ButtonBehaviour button = buttons[i];
-
-            if(s.isLastSlice)
-            {
-                Finish();
-            }
-            else if(s.passThreshold == 0 || button.touchedFrames >= s.passThreshold && s.passOnRelease == false)
-            {
-                Debug.Log(i);
-                Debug.Log(s.nextSlice[i]);
-                currentSlice = s.nextSlice[i];
-                Slice ns = (Slice)slices[currentSlice];
-                loopChancesToUse = ns.loopChances;
-                releaseChancesToUse = ns.releaseChances;
-            }
-            else if (s.loopChances > 0)
-            {
-                CheckLoopChances(s);
-            }
-        }
-
-        SliceEnd(s);
-    }
-*/
 
     void EndChecks(Slice s)
     {
@@ -207,7 +199,7 @@ public class FrameSampler : MonoBehaviour
         {
             CheckLoopChances(s);
         }
-        
+
         SliceEnd(s);
     }
 
@@ -218,8 +210,6 @@ public class FrameSampler : MonoBehaviour
         {
             float f = (float)1/s.loopChances;
             f = (float)f*loopChancesToUse;
-            //Debug.Log("loop chances to use = " + loopChancesToUse);
-            //Debug.Log("colour value = " + f);
             Color c = new Color(f, f, f, 1);
             rend.color = c;
         }
