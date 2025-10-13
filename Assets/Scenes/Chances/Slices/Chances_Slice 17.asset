@@ -17,8 +17,10 @@ MonoBehaviour:
   passThreshold: 60
   loopChances: 0
   releaseChances: 0
-  nextSlice: 18
+  nextSlice: 12000000
   failSlice: 17
+  showScore: 1
+  fadesWithChances: 0
   isLastSlice: 0
   loopOnRelease: 0
   passOnRelease: 0

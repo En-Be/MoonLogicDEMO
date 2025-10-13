@@ -20,6 +20,7 @@ MonoBehaviour:
   nextSlice: 07000000
   failSlice: 9
   showScore: 0
+  fadesWithChances: 0
   isLastSlice: 0
   loopOnRelease: 0
   passOnRelease: 0

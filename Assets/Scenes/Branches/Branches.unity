@@ -1618,7 +1618,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8984e1897071d0a40bffe4f0883e6005, type: 2}
   - {fileID: 11400000, guid: 11b7640d0f04fb64683a3014b36fe5a4, type: 2}
   - {fileID: 11400000, guid: 7b62f1a825dbaad4fa53530372a3ce31, type: 2}
-  clip: {fileID: 0}
+  clip: {fileID: 8300000, guid: 92c191f0269bf574a961faaffa95be09, type: 3}
   slices:
   - {fileID: 11400000, guid: a360b8c1ac3c66c438502144310d6391, type: 2}
   - {fileID: 11400000, guid: fb1428c0c9935674884c2d8028ad83ea, type: 2}

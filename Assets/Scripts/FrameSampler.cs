@@ -56,7 +56,7 @@ public class FrameSampler : MonoBehaviour
     {   
         Slice s = (Slice)slices[currentSlice];
 
-        //Debug.Log("current frame = " + currentFrame);
+        Debug.Log("current frame = " + currentFrame);
         rend.sprite = frames[currentFrame];
 
         if(s.loopChances == 0 || s.loopChances == loopChancesToUse)
@@ -112,7 +112,7 @@ public class FrameSampler : MonoBehaviour
             else
             {
                 button.UpdateFrame(foundSprite);
-                bool touching = button.UpdateCollider(s, i, colliderPaths);
+                bool touching = button.UpdateCollider(s, i, colliderPaths, currentFrame);
 
                 if (touching && s.loopOnRelease)
                 {
@@ -233,7 +233,8 @@ public class FrameSampler : MonoBehaviour
         aud.time = targetTime;
         foreach(ButtonBehaviour button in buttons)
         {
-            button.Reset();
+            Debug.Log("resetting button/touch indicator");
+            button.Reset(); // might need to change this to prevent touch score indicator flicker
         }
         Debug.Log("Starting slice " + currentSlice);
     }

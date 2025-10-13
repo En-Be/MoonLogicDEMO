@@ -15,8 +15,12 @@ MonoBehaviour:
   firstFrame: 88
   lastFrame: 90
   passThreshold: 1
-  nextSlice: 10
-  loopSlice: 9
+  loopChances: 0
+  releaseChances: 0
+  nextSlice: 0a000000
+  failSlice: 0
+  showScore: 1
+  fadesWithChances: 0
   isLastSlice: 0
   loopOnRelease: 0
   passOnRelease: 1

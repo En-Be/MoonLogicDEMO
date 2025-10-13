@@ -14,9 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firstFrame: 13
   lastFrame: 24
-  passThreshold: 1
-  nextSlice: 2
-  loopSlice: 0
+  passThreshold: 3
+  loopChances: 1
+  releaseChances: 0
+  nextSlice: 02000000
+  failSlice: 0
+  showScore: 1
+  fadesWithChances: 0
   isLastSlice: 0
   loopOnRelease: 0
   passOnRelease: 0

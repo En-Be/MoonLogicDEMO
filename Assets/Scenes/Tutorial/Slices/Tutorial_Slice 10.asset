@@ -13,10 +13,14 @@ MonoBehaviour:
   m_Name: Tutorial_Slice 10
   m_EditorClassIdentifier: 
   firstFrame: 91
-  lastFrame: 118
+  lastFrame: 119
   passThreshold: 0
-  nextSlice: 11
-  loopSlice: 10
+  loopChances: 0
+  releaseChances: 0
+  nextSlice: 0b000000
+  failSlice: 0
+  showScore: 1
+  fadesWithChances: 0
   isLastSlice: 1
   loopOnRelease: 0
   passOnRelease: 0

@@ -13,12 +13,14 @@ MonoBehaviour:
   m_Name: Chances_Slice 11
   m_EditorClassIdentifier: 
   firstFrame: 1113
-  lastFrame: 1154
+  lastFrame: 1155
   passThreshold: 15
   loopChances: 3
   releaseChances: 0
-  nextSlice: 12
+  nextSlice: 0c000000
   failSlice: 0
+  showScore: 1
+  fadesWithChances: 1
   isLastSlice: 0
   loopOnRelease: 0
   passOnRelease: 0

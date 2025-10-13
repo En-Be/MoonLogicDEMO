@@ -32,7 +32,7 @@ public class ButtonBehaviour : MonoBehaviour
         playedFrames++;
     }
 
-    public bool UpdateCollider(Slice s, int b, List<Vector2[]> colliderPaths)
+    public bool UpdateCollider(Slice s, int b, List<Vector2[]> colliderPaths, int currentFrame)
     {
         if (colliderPaths == null || colliderPaths.Count == 0)
         {
@@ -58,17 +58,33 @@ public class ButtonBehaviour : MonoBehaviour
 
         if (Input.touchCount > 0 || Input.GetMouseButton(0))
         {
+            //Debug.Log("touch indicator logic reached here_1");
+            //Debug.Log("current frame = " + currentFrame);
             if (RayHasHit(b))
             {
+                //Debug.Log("touch indicator logic reached here_2");
                 touchedFrames++;
                 float score = (float)touchedFrames / s.passThreshold;
-                if (s.lastFrame - s.firstFrame > 11)
+                //Debug.Log("touchedframes = " + touchedFrames);
+                //Debug.Log("s.passThreshold = " + s.passThreshold);
+
+
+                //if (s.lastFrame - s.firstFrame > 11) // change this to check if 'don't show score indicator' is not true
+                if (s.showScore) // change this to something to prevent flicker
                 {
+                    if (score > 1)
+                    {
+                        score = 1;
+                    }
+                    //Debug.Log("touch indicator logic reached here_3");
+                    //Debug.Log("touch indicator score = " + score);
                     foreach (Image i in touchScoreIndicators)
                     {
                         i.fillAmount = score;
                     }
                 }
+                
+
                 return true;
             }
         }

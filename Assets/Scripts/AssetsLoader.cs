@@ -93,6 +93,7 @@ public class AssetsLoader : MonoBehaviour
             
             if (!Directory.Exists(folderPath))
             {
+                Debug.Log("No button frame folders");
                 // No more folders found, stop searching
                 break;
             }
@@ -123,7 +124,7 @@ public class AssetsLoader : MonoBehaviour
 
                     if (path.Count == 0)
                     {
-                        Debug.LogWarning($"No collider shape found for sprite: {image.name}");
+                        Debug.LogWarning($"No physics shape found for sprite: {image.name}");
                     }
                     else
                     {
