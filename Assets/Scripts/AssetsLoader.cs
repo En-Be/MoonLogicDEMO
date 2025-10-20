@@ -93,7 +93,7 @@ public class AssetsLoader : MonoBehaviour
             
             if (!Directory.Exists(folderPath))
             {
-                Debug.Log("No button frame folders");
+                Debug.Log("No more button frame folders");
                 // No more folders found, stop searching
                 break;
             }

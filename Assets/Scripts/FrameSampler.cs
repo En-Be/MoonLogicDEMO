@@ -56,7 +56,7 @@ public class FrameSampler : MonoBehaviour
     {   
         Slice s = (Slice)slices[currentSlice];
 
-        Debug.Log("current frame = " + currentFrame);
+        //Debug.Log("current frame = " + currentFrame);
         rend.sprite = frames[currentFrame];
 
         if(s.loopChances == 0 || s.loopChances == loopChancesToUse)
@@ -101,13 +101,14 @@ public class FrameSampler : MonoBehaviour
             ButtonBehaviour button = buttons[i];
 
             Sprite foundSprite = FindSpriteWithNumber(i, currentFrame);
-            List<Vector2[]> colliderPaths = FindColliderWithNumber(i, currentFrame);
 
+            List<Vector2[]> colliderPaths = FindColliderWithNumber(i, currentFrame);
+            
             if (foundSprite == null || colliderPaths == null)
             {
                 button.RemoveFrame();
                 button.RemoveCollider();
-                Debug.Log("sprite or paths is null");
+                //Debug.Log("sprite or paths is null");
             }
             else
             {
@@ -184,8 +185,8 @@ public class FrameSampler : MonoBehaviour
                 ButtonBehaviour button = buttons[i];
                 if(s.passThreshold == 0 || button.touchedFrames >= s.passThreshold && s.passOnRelease == false)
                 {
-                    Debug.Log("button = " + i);
-                    Debug.Log("next slice = " + s.nextSlice[i]);
+                    //Debug.Log("button = " + i);
+                    //Debug.Log("next slice = " + s.nextSlice[i]);
                     currentSlice = s.nextSlice[i];
                     Slice ns = (Slice)slices[currentSlice];
                     loopChancesToUse = ns.loopChances;
@@ -233,15 +234,15 @@ public class FrameSampler : MonoBehaviour
         aud.time = targetTime;
         foreach(ButtonBehaviour button in buttons)
         {
-            Debug.Log("resetting button/touch indicator");
+            //Debug.Log("resetting button/touch indicator");
             button.Reset(); // might need to change this to prevent touch score indicator flicker
         }
-        Debug.Log("Starting slice " + currentSlice);
+        //Debug.Log("Starting slice " + currentSlice);
     }
 
     void Finish()
     {
-        Debug.Log("Exiting scene");
+        //Debug.Log("Exiting scene");
         SceneManager.LoadScene(loadsTo);
     }
 }

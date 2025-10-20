@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class ButtonBehaviour : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class ButtonBehaviour : MonoBehaviour
     Vector3 mousePos;
     public Camera cam;
     public Image[] touchScoreIndicators;
+    public string loadsScene;
 
     void Start()
     {
@@ -58,32 +60,31 @@ public class ButtonBehaviour : MonoBehaviour
 
         if (Input.touchCount > 0 || Input.GetMouseButton(0))
         {
-            //Debug.Log("touch indicator logic reached here_1");
-            //Debug.Log("current frame = " + currentFrame);
+
             if (RayHasHit(b))
             {
-                //Debug.Log("touch indicator logic reached here_2");
+                if (loadsScene != null)
+                {
+                    Debug.Log("will load scene: " + loadsScene);
+                    SceneManager.LoadScene(loadsScene);
+                }
+                
                 touchedFrames++;
                 float score = (float)touchedFrames / s.passThreshold;
-                //Debug.Log("touchedframes = " + touchedFrames);
-                //Debug.Log("s.passThreshold = " + s.passThreshold);
 
-
-                //if (s.lastFrame - s.firstFrame > 11) // change this to check if 'don't show score indicator' is not true
                 if (s.showScore) // change this to something to prevent flicker
                 {
                     if (score > 1)
                     {
                         score = 1;
                     }
-                    //Debug.Log("touch indicator logic reached here_3");
-                    //Debug.Log("touch indicator score = " + score);
+
                     foreach (Image i in touchScoreIndicators)
                     {
                         i.fillAmount = score;
                     }
                 }
-                
+
 
                 return true;
             }
