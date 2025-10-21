@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
@@ -18,9 +19,7 @@ public static class SliceDataUtility
     /// <summary>
     /// Finds all 'Slice' ScriptableObjects in the project assets and generates 
     /// a manifest file (sliceKeys.txt) in the Resources folder containing a 
-    /// comma-separated list of all slice names. This is used by the runtime 
-    /// ProgressDisplay to know the total number of items.
-    /// This function is called internally by GenerateInitialSliceData.
+    /// comma-separated list of all slice names.
     /// </summary>
     public static void GenerateKeyManifestFile()
     {
@@ -33,7 +32,7 @@ public static class SliceDataUtility
         foreach (string guid in guids)
         {
             string path = AssetDatabase.GUIDToAssetPath(guid);
-            // We use Object here as we don't have the explicit 'Slice' class definition
+            // Load as Object since 'Slice' class definition isn't provided here
             Object asset = AssetDatabase.LoadAssetAtPath<Object>(path); 
             
             if (asset != null)
@@ -60,7 +59,7 @@ public static class SliceDataUtility
     }
     
     // -------------------------------------------------------------------------
-    // Existing PlayerPrefs Management Functions
+    // PlayerPrefs Management Functions
     // -------------------------------------------------------------------------
 
     /// <summary>
@@ -141,4 +140,46 @@ public static class SliceDataUtility
             Debug.LogWarning("[SliceDataUtility] No Slice keys were found to clear.");
         }
     }
+    
+    /// <summary>
+    /// Finds all 'Slice' ScriptableObjects, retrieves their corresponding PlayerPrefs 
+    /// values, and prints them to the console for debugging purposes.
+    /// </summary>
+    [MenuItem("Tools/Slices/Print All Slice PlayerPrefs")]
+    public static void PrintAllSlicePlayerPrefs()
+    {
+        // 1. Find all Slices using the AssetDatabase to get the list of known keys
+        string[] guids = AssetDatabase.FindAssets("t:Slice");
+        
+        List<string> outputLines = new List<string>();
+        
+        outputLines.Add("--- Slice PlayerPrefs Status ---");
+        
+        // 2. Loop through assets, get the key name, and retrieve the value from PlayerPrefs
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            Object asset = AssetDatabase.LoadAssetAtPath<Object>(path); 
+            
+            if (asset != null)
+            {
+                string keyName = asset.name;
+                // Get the integer value, defaulting to 0 (BOOL_FALSE) if the key doesn't exist
+                int value = PlayerPrefs.GetInt(keyName, BOOL_FALSE);
+                
+                string status = (value == BOOL_TRUE) ? "COMPLETED" : "FALSE (Not Collected)";
+                
+                outputLines.Add($"[{keyName}] = {value} ({status})");
+            }
+        }
+        
+        if (outputLines.Count == 1) // Only the header line exists
+        {
+            outputLines.Add("No Slice assets found in the project.");
+        }
+
+        // 3. Print the results to the console
+        Debug.Log(string.Join("\n", outputLines));
+    }
 }
+#endif

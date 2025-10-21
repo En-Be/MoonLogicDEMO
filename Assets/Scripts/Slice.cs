@@ -18,4 +18,5 @@ public class Slice : ScriptableObject
     public bool isLastSlice;
     public bool loopOnRelease;
     public bool passOnRelease;
+    public string[] requiredToPass;
 }

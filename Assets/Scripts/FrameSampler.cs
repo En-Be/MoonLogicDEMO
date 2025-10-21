@@ -79,6 +79,7 @@ public class FrameSampler : MonoBehaviour
                 }
                 else if(s.passOnRelease)
                 {
+                    PlayerPrefs.SetInt(s.name, 1);
                     currentSlice = s.nextSlice[i];
                     SliceEnd(s);
                 }
@@ -176,6 +177,7 @@ public class FrameSampler : MonoBehaviour
     {
         if(s.isLastSlice)
         {
+            PlayerPrefs.SetInt(s.name, 1);
             Finish();
         }
         else
@@ -187,7 +189,6 @@ public class FrameSampler : MonoBehaviour
                 {
                     //Debug.Log("button = " + i);
                     //Debug.Log("next slice = " + s.nextSlice[i]);
-                    Debug.Log(s.name + " passed");
                     PlayerPrefs.SetInt(s.name, 1);
                     currentSlice = s.nextSlice[i];
                     Slice ns = (Slice)slices[currentSlice];
