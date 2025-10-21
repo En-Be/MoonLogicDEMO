@@ -187,6 +187,8 @@ public class FrameSampler : MonoBehaviour
                 {
                     //Debug.Log("button = " + i);
                     //Debug.Log("next slice = " + s.nextSlice[i]);
+                    Debug.Log(s.name + " passed");
+                    PlayerPrefs.SetInt(s.name, 1);
                     currentSlice = s.nextSlice[i];
                     Slice ns = (Slice)slices[currentSlice];
                     loopChancesToUse = ns.loopChances;
