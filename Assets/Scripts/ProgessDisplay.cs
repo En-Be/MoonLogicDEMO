@@ -4,15 +4,15 @@ using System;
 using System.Linq; 
 
 /// <summary>
-/// Loads "sliceSave.json" from the Resources folder, dynamically calculates a score
-/// based on the count of 'true' boolean values in the JSON, regardless of the key names.
+/// Loads "sliceSave.json" from the Resources folder, dynamically calculates the percentage
+/// of 'true' boolean values in the JSON, and displays it in a TextMeshPro component.
 /// 
 /// This script uses string parsing to handle JSON with dynamic keys at the root level, 
 /// as standard Unity's JsonUtility cannot deserialize a root dictionary.
 /// </summary>
 public class ProgressDisplay : MonoBehaviour
 {
-    [Tooltip("The TextMeshPro UI element used to display the final score.")]
+    [Tooltip("The TextMeshPro UI element used to display the final percentage progress.")]
     public TextMeshProUGUI scoreText;
 
     // The name of the JSON file in the Resources folder (without extension)
@@ -22,7 +22,7 @@ public class ProgressDisplay : MonoBehaviour
     {
         if (scoreText == null)
         {
-            Debug.LogError("ScoreDisplay requires a TextMeshProUGUI component assigned to scoreText.");
+            Debug.LogError("ProgressDisplay requires a TextMeshProUGUI component assigned to scoreText.");
             return;
         }
 
@@ -45,10 +45,20 @@ public class ProgressDisplay : MonoBehaviour
         int totalBooleans;
         int score = CalculateDynamicBooleanScore(jsonFile.text, out totalBooleans);
 
-        // 3. Update the UI.
-        scoreText.text = $"Slices Collected: {score} / {totalBooleans}";
+        // 3. Calculate Percentage.
+        float percentage = 0f;
+        
+        if (totalBooleans > 0)
+        {
+            // Calculate score as a float to ensure division provides correct decimal value
+            percentage = (float)score / totalBooleans * 100f;
+        }
 
-        Debug.Log($"Score loaded successfully. Total score is: {score} out of {totalBooleans} possible items.");
+        // 4. Update the UI.
+        // :F1 formats the float to one decimal place.
+        scoreText.text = $"Progress: {percentage:F1}%";
+
+        Debug.Log($"Progress loaded successfully. Total percentage is: {percentage:F1}% ({score} out of {totalBooleans} possible items).");
     }
 
     /// <summary>
