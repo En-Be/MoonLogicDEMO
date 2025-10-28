@@ -82,6 +82,6 @@ public class ProgressDisplay : MonoBehaviour
         // :F1 formats the float to one decimal place.
         scoreText.text = $"Progress: {percentage:F1}%";
 
-        Debug.Log($"Progress loaded successfully from PlayerPrefs. Total progress is: {percentage:F1}% ({completedSlices} out of {totalSlices} possible items).");
+        //Debug.Log($"Progress loaded successfully from PlayerPrefs. Total progress is: {percentage:F1}% ({completedSlices} out of {totalSlices} possible items).");
     }
 }

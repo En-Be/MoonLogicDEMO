@@ -149,9 +149,6 @@ public class FrameSampler : MonoBehaviour
         return new List<Vector2[]> { frameData.points };
     }
 
-
-
-
     void CheckReleaseChances(Slice s)
     {
         if(releaseChancesToUse == 0)
@@ -180,7 +177,7 @@ public class FrameSampler : MonoBehaviour
             PlayerPrefs.SetInt(s.name, 1);
             Finish();
         }
-        else
+        else if(HasKeys())
         {
             for(int i = 0; i < buttons.Length; i++)
             {
@@ -190,7 +187,7 @@ public class FrameSampler : MonoBehaviour
                     //Debug.Log("button = " + i);
                     //Debug.Log("next slice = " + s.nextSlice[i]);
                     PlayerPrefs.SetInt(s.name, 1);
-                    currentSlice = s.nextSlice[i];
+                    currentSlice = s.nextSlice[i]; // the button determines the branch from the list on the slice
                     Slice ns = (Slice)slices[currentSlice];
                     loopChancesToUse = ns.loopChances;
                     releaseChancesToUse = ns.releaseChances;
@@ -228,6 +225,42 @@ public class FrameSampler : MonoBehaviour
         
     }
 
+    bool HasKeys()
+    {
+        Debug.Log("Checking keys...");
+        Slice cs = (Slice)slices[currentSlice];
+        string[] rk = cs.requiredToPass;
+        Debug.Log(rk);
+        if (rk == null)
+        {
+            return true;
+        }
+        
+        int kc = 0;
+
+        foreach (string k in rk)
+        {
+            if (PlayerPrefs.GetInt(k) == 1)
+            {
+                kc++;
+                Debug.Log("Has a key");
+            }
+            else
+            {
+                Debug.Log("Missing a key");
+            }
+        }
+
+        if(kc == rk.Count())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
     void SliceEnd(Slice s)
     {
         Slice ns = (Slice)slices[currentSlice];
